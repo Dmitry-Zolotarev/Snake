@@ -5,7 +5,10 @@ const screen = canvas.getContext('2d');
 const gridSize = 20;
 const tileCount = canvas.width / gridSize;
 
-let snake = [{ x: 3, y: 3 }];
+let snake = [
+    { x: 3, y: 3 },
+    { x: 2, y: 3 }
+];
 let apple = { x: 5, y: 5 };
 let mushroom = { x: 8, y: 8 };
 let dx = 0, dy = 0;
@@ -23,7 +26,7 @@ const appleImg = new Image();
 appleImg.src = 'img/apple.png';
 
 const mushroomImg = new Image();
-mushroomImg.src = 'img/mushroom.png'; // ← Исправлено!
+mushroomImg.src = 'img/mushroom.png';
 
 function randomInt(max) {
     return Math.floor(Math.random() * max);
@@ -52,7 +55,7 @@ function gameLoop() {
 
     if (head.x === apple.x && head.y === apple.y) {
         score++;
-        updateArea(); // ← Исправлено имя
+        updateArea();
     } else if (head.x === mushroom.x && head.y === mushroom.y) {
         resetGame();
         return;
@@ -71,7 +74,13 @@ function updateArea() {
 }
 
 function resetGame() {
-    snake = [{ x: randomInt(10), y: randomInt(10) }]; // ← Исправлено
+    let startX = randomInt(10);
+    if (startX === 0) startX = 1;
+    let startY = randomInt(10);
+    snake = [
+        { x: startX, y: startY },
+        { x: startX - 1, y: startY }
+    ];
     dx = dy = 0;
     score = 0;
     started = false;
@@ -100,7 +109,8 @@ function draw() {
 function startGame() {
     startButton.style.display = 'none';
     started = true;
-    dx = 1; dy = 0;
+    dx = 1;
+    dy = 0;
     updateArea();
 }
 
@@ -109,24 +119,41 @@ document.addEventListener('keydown', e => {
         case 'ArrowUp':
         case 'w':
         case 'W':
+        case 'ц':
+        case 'Ц':
             if (dy === 0) { dx = 0; dy = -1; }
             break;
         case 'ArrowDown':
         case 's':
         case 'S':
+        case 'ы':
+        case 'Ы':
             if (dy === 0) { dx = 0; dy = 1; }
             break;
         case 'ArrowLeft':
+        case 'ф':
+        case 'Ф':
         case 'a':
         case 'A':
             if (dx === 0) { dx = -1; dy = 0; }
             break;
         case 'ArrowRight':
+        case 'в':
+        case 'В':
         case 'd':
         case 'D':
             if (dx === 0) { dx = 1; dy = 0; }
             break;
+        case 'Escape':
+            if (started) {
+                started = false;
+                alert("Пауза");
+                started = true;
+            }
+            break;
     }
 });
 
-setInterval(gameLoop, 100);
+let delay = 100 - score;
+if (delay < 50) delay = 50;
+setInterval(gameLoop, delay);
